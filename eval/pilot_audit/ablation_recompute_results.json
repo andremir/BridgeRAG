@@ -1,0 +1,113 @@
+{
+  "note": "Corrected ablation: all conditions use the same Proposal H top_cands pool. A=SVO-ranked pool (no LLM), B=2-way LLM, C=3-way LLM. A\u2192B isolates LLM reranking. B\u2192C isolates bridge conditioning. Subgroup tests on 2Wiki (4 types) are exploratory; p-values uncorrected.",
+  "alpha": 0.1,
+  "musique": {
+    "all": {
+      "n": 999,
+      "n_skip": 1,
+      "A_svo_pool": 0.7937103770437103,
+      "B_2way": 0.8093093093093093,
+      "C_3way": 0.8146479813146479,
+      "A_to_B_delta": 0.015598932265599053,
+      "B_to_C_delta": 0.005338672005338552,
+      "A_to_B_wins": 127,
+      "A_to_B_losses": 92,
+      "A_to_B_p": 0.021375972466109776,
+      "B_to_C_wins": 69,
+      "B_to_C_losses": 54,
+      "B_to_C_p": 0.20664710898494285
+    },
+    "multihop": {
+      "n": 999,
+      "n_skip": 1,
+      "A_svo_pool": 0.7937103770437103,
+      "B_2way": 0.8093093093093093,
+      "C_3way": 0.8146479813146479,
+      "A_to_B_delta": 0.015598932265599053,
+      "B_to_C_delta": 0.005338672005338552,
+      "A_to_B_wins": 127,
+      "A_to_B_losses": 92,
+      "A_to_B_p": 0.021375972466109776,
+      "B_to_C_wins": 69,
+      "B_to_C_losses": 54,
+      "B_to_C_p": 0.20664710898494285
+    }
+  },
+  "wiki2": {
+    "all": {
+      "n": 1000,
+      "n_skip": 0,
+      "A_svo_pool": 0.891,
+      "B_2way": 0.94375,
+      "C_3way": 0.95275,
+      "A_to_B_delta": 0.052749999999999964,
+      "B_to_C_delta": 0.009000000000000008,
+      "A_to_B_wins": 150,
+      "A_to_B_losses": 17,
+      "A_to_B_p": 8.90476902490983e-28,
+      "B_to_C_wins": 36,
+      "B_to_C_losses": 6,
+      "B_to_C_p": 2.8288777684792876e-06
+    },
+    "bridge_comparison": {
+      "n": 235,
+      "n_skip": 0,
+      "A_svo_pool": 0.7851063829787234,
+      "B_2way": 0.85,
+      "C_3way": 0.875531914893617,
+      "A_to_B_delta": 0.0648936170212766,
+      "B_to_C_delta": 0.025531914893617058,
+      "A_to_B_wins": 71,
+      "A_to_B_losses": 12,
+      "A_to_B_p": 2.394644905698785e-11,
+      "B_to_C_wins": 28,
+      "B_to_C_losses": 4,
+      "B_to_C_p": 1.9301194697618484e-05
+    },
+    "compositional": {
+      "n": 413,
+      "n_skip": 0,
+      "A_svo_pool": 0.9055690072639225,
+      "B_2way": 0.9661016949152542,
+      "C_3way": 0.9697336561743342,
+      "A_to_B_delta": 0.060532687651331685,
+      "B_to_C_delta": 0.003631961259079941,
+      "A_to_B_wins": 51,
+      "A_to_B_losses": 1,
+      "A_to_B_p": 2.353672812205332e-14,
+      "B_to_C_wins": 4,
+      "B_to_C_losses": 1,
+      "B_to_C_p": 0.375
+    },
+    "comparison": {
+      "n": 244,
+      "n_skip": 0,
+      "A_svo_pool": 0.9569672131147541,
+      "B_2way": 0.9938524590163934,
+      "C_3way": 0.9959016393442623,
+      "A_to_B_delta": 0.03688524590163933,
+      "B_to_C_delta": 0.002049180327868938,
+      "A_to_B_wins": 18,
+      "A_to_B_losses": 0,
+      "A_to_B_p": 7.62939453125e-06,
+      "B_to_C_wins": 1,
+      "B_to_C_losses": 0,
+      "B_to_C_p": 1.0
+    },
+    "inference": {
+      "n": 108,
+      "n_skip": 0,
+      "A_svo_pool": 0.9166666666666666,
+      "B_2way": 0.9490740740740741,
+      "C_3way": 0.9583333333333334,
+      "A_to_B_delta": 0.03240740740740744,
+      "B_to_C_delta": 0.0092592592592593,
+      "A_to_B_wins": 10,
+      "A_to_B_losses": 4,
+      "A_to_B_p": 0.1795654296875,
+      "B_to_C_wins": 3,
+      "B_to_C_losses": 1,
+      "B_to_C_p": 0.625
+    }
+  }
+}

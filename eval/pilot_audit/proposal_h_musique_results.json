@@ -1,0 +1,61 @@
+{
+  "canonical_paper_result": {
+    "r5": 0.8146,
+    "source": "ablation_recompute_results.json → musique.all.C_3way",
+    "note": "Paper reports 0.8146 from the corrected ablation recompute (most recent run, 2026-04-02 17:14). This file's all_r5=0.8138 is an earlier independent run of the same system; the 0.0008 difference is LLM judge non-determinism. See RESULTS_PROVENANCE.md."
+  },
+  "experiment": "proposal_h_musique_dual_entity",
+  "dataset": "musique",
+  "description": "Proposal H: 2 entities x top-5 ANN each \u2192 SVO-15 + e1-top-5 + e2-top-5 \u2192 pool-20 \u2192 tripartite judge. Same alpha protocol as Prop B.",
+  "hyperparams": {
+    "svo_pool": 15,
+    "entity_pool_each": 5,
+    "rerank_n": 20,
+    "bridge_chars": 700,
+    "cand_chars": 700,
+    "concur_llm": 50
+  },
+  "diagnostics": {
+    "entity2_distinct_rate": 0.732,
+    "avg_e1_new_per_query": 2.3,
+    "avg_e2_new_per_query": 2.15,
+    "avg_pool_coverage": 0.8732,
+    "e2_gold_contribution_queries": 34
+  },
+  "baselines": {
+    "svo_n3": 0.7932,
+    "proprag": 0.783,
+    "hipporag2": 0.747,
+    "prop_b_best": 0.8133
+  },
+  "best_alpha": 0.1,
+  "tune_r5": 0.7982,
+  "tune_w": 149,
+  "tune_l": 34,
+  "tune_p": 0.0,
+  "test_r5": 0.8286,
+  "test_w": 181,
+  "test_l": 30,
+  "test_p": 0.0,
+  "all_r5": 0.8138,
+  "all_w": 330,
+  "all_l": 64,
+  "all_p": 0.0,
+  "cross_dataset_blind": {
+    "alpha": 0.1,
+    "all_r5": 0.8138,
+    "w": 330,
+    "l": 64,
+    "p": 0.0
+  },
+  "per_type_r5": {
+    "multihop": 0.8138
+  },
+  "delta_vs_prop_b": 0.0005,
+  "delta_vs_proprag": 0.0308,
+  "acceptance": {
+    "rule": "MuSiQue\u22650.8103",
+    "pass": true
+  },
+  "elapsed_s": 740.4
+}

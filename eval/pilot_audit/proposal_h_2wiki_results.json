@@ -1,0 +1,59 @@
+{
+  "experiment": "proposal_h_2wiki_dual_entity",
+  "dataset": "2wiki",
+  "description": "Proposal H: 2 entities x top-5 ANN each \u2192 SVO-15 + e1-top-5 + e2-top-5 \u2192 pool-20 \u2192 tripartite judge. Same alpha protocol as Prop B.",
+  "hyperparams": {
+    "svo_pool": 15,
+    "entity_pool_each": 5,
+    "rerank_n": 20,
+    "bridge_chars": 700,
+    "cand_chars": 700,
+    "concur_llm": 100
+  },
+  "diagnostics": {
+    "entity2_distinct_rate": 0.5956,
+    "avg_e1_new_per_query": 2.7,
+    "avg_e2_new_per_query": 1.83,
+    "avg_pool_coverage": 0.9375,
+    "e2_gold_contribution_queries": 31
+  },
+  "baselines": {
+    "svo_n3": 0.9193,
+    "proprag": 0.941,
+    "hipporag2": 0.904,
+    "prop_b_best": 0.9375
+  },
+  "best_alpha": 0.1,
+  "tune_r5": 0.9519,
+  "tune_w": 269,
+  "tune_l": 0,
+  "tune_p": 0.0,
+  "test_r5": 0.9537,
+  "test_w": 268,
+  "test_l": 0,
+  "test_p": 0.0,
+  "all_r5": 0.9527,
+  "all_w": 537,
+  "all_l": 0,
+  "all_p": 0.0,
+  "cross_dataset_blind": {
+    "alpha": 0.15,
+    "all_r5": 0.951,
+    "w": 538,
+    "l": 0,
+    "p": 0.0
+  },
+  "per_type_r5": {
+    "bridge_comparison": 0.8755,
+    "compositional": 0.9697,
+    "comparison": 0.9959,
+    "inference": 0.9583
+  },
+  "delta_vs_prop_b": 0.0152,
+  "delta_vs_proprag": 0.0118,
+  "acceptance": {
+    "rule": "2Wiki\u22650.9425",
+    "pass": true
+  },
+  "elapsed_s": 337.1
+}
