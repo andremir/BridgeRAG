@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BridgeRAG: Training-Free Bridge-Conditioned Retrieval for Multi-Hop QA</title>
+  <meta name="description" content="BridgeRAG ranks later-hop evidence by bridge-conditioned utility rather than query-only relevance. Training-free, graph-free, SoTA on MuSiQue, 2WikiMultiHopQA, and HotpotQA." />
+  <meta name="keywords" content="multi-hop retrieval, bridge-conditioned retrieval, training-free retrieval, graph-free retrieval, retrieval-augmented generation, multi-hop question answering, tripartite scoring, chain disambiguation, open-domain QA" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Georgia', serif;
+      font-size: 17px;
+      line-height: 1.7;
+      color: #222;
+      background: #fff;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 6rem;
+    }
+    h1 { font-size: 1.85rem; font-weight: bold; line-height: 1.25; margin-bottom: 0.5rem; }
+    h2 { font-size: 1.2rem; font-weight: bold; margin: 2.5rem 0 0.75rem; border-bottom: 1px solid #ddd; padding-bottom: 0.3rem; }
+    h3 { font-size: 1rem; font-weight: bold; margin: 1.5rem 0 0.4rem; }
+    p  { margin-bottom: 1rem; }
+    a  { color: #1a56a0; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .authors  { color: #555; font-size: 0.95rem; margin-bottom: 0.4rem; }
+    .venue    { color: #888; font-size: 0.9rem; font-style: italic; margin-bottom: 1.5rem; }
+    .claim {
+      font-size: 1.15rem;
+      font-style: italic;
+      border-left: 3px solid #1a56a0;
+      padding: 0.6rem 1rem;
+      margin: 1.5rem 0;
+      background: #f5f8ff;
+      color: #1a2a4a;
+    }
+    /* Links bar */
+    .links { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 1.5rem 0; }
+    .links a {
+      display: inline-block;
+      background: #1a56a0;
+      color: #fff;
+      padding: 0.35rem 0.9rem;
+      border-radius: 4px;
+      font-size: 0.88rem;
+      font-family: sans-serif;
+    }
+    .links a:hover { background: #0e3d7a; text-decoration: none; }
+    .links a.secondary { background: #555; }
+    .links a.secondary:hover { background: #333; }
+    /* Results table */
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: 0.93rem; font-family: sans-serif; }
+    th { background: #f0f4f8; text-align: center; padding: 0.5rem 0.75rem; border-bottom: 2px solid #bbb; }
+    th:first-child { text-align: left; }
+    td { padding: 0.4rem 0.75rem; border-bottom: 1px solid #e0e0e0; text-align: center; }
+    td:first-child { text-align: left; }
+    tr.ours td { font-weight: bold; background: #f0f8f0; }
+    tr.ours td:first-child { color: #1a56a0; }
+    .delta { color: #1a7a30; font-size: 0.85rem; }
+    /* Example box */
+    .example {
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+      background: #fafafa;
+      font-size: 0.93rem;
+    }
+    .example .label { font-weight: bold; color: #555; font-family: sans-serif; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.2rem; }
+    .example .wrong { color: #c0392b; }
+    .example .right { color: #1a7a30; }
+    .example .bridge { color: #1a56a0; }
+    /* Novelty bullets */
+    ul.novelty { list-style: none; padding: 0; }
+    ul.novelty li { padding: 0.4rem 0 0.4rem 1.5rem; position: relative; }
+    ul.novelty li::before { content: "→"; position: absolute; left: 0; color: #1a56a0; font-weight: bold; }
+    /* Mechanism experiments */
+    .experiments { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+    @media (max-width: 600px) { .experiments { grid-template-columns: 1fr; } }
+    .exp-card { border: 1px solid #ddd; border-radius: 5px; padding: 0.8rem 1rem; font-size: 0.9rem; }
+    .exp-card strong { display: block; margin-bottom: 0.2rem; font-family: sans-serif; }
+    /* BibTeX */
+    pre {
+      background: #f4f4f4;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 1rem;
+      font-size: 0.82rem;
+      overflow-x: auto;
+      white-space: pre;
+      font-family: 'Courier New', monospace;
+      line-height: 1.5;
+    }
+    /* Reproducibility */
+    .repro { background: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; padding: 1rem 1.2rem; font-size: 0.92rem; }
+    hr { border: none; border-top: 1px solid #eee; margin: 2.5rem 0; }
+  </style>
+</head>
+<body>
+
+<h1>BridgeRAG: Training-Free Bridge-Conditioned Retrieval<br>for Multi-Hop Question Answering</h1>
+<p class="authors">Andre Bacellar</p>
+<p class="venue">Preprint, 2026</p>
+
+<div class="claim">
+  BridgeRAG ranks later-hop evidence by bridge-conditioned utility rather than query-only relevance —
+  without a graph database, proposition index, or any training.
+</div>
+
+<div class="links">
+  <a href="main.pdf">Paper PDF</a>
+  <a href="https://arxiv.org/abs/YOUR_ARXIV_ID">arXiv</a>
+  <a href="https://github.com/andremir/BridgeRAG" class="secondary">GitHub</a>
+  <a href="https://github.com/andremir/BridgeRAG/blob/main/eval/pilot_audit/bridgerag_canonical_results.json" class="secondary">Artifacts</a>
+  <a href="#bibtex" class="secondary">BibTeX</a>
+</div>
+
+<hr>
+
+<!-- RESULTS -->
+<h2>Results</h2>
+<p>Best published training-free R@5 under matched benchmark evaluation on all three standard MHQA benchmarks.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Method</th>
+      <th>MuSiQue R@5</th>
+      <th>2WikiMultiHop R@5</th>
+      <th>HotpotQA R@5</th>
+      <th>Training</th>
+      <th>Graph</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>HippoRAG2</td>
+      <td>0.747</td>
+      <td>0.904</td>
+      <td>0.963</td>
+      <td>No</td>
+      <td>Yes (PPR)</td>
+    </tr>
+    <tr>
+      <td>PropRAG</td>
+      <td>0.783</td>
+      <td>0.941</td>
+      <td>0.974</td>
+      <td>No</td>
+      <td>Yes (prop.)</td>
+    </tr>
+    <tr class="ours">
+      <td>BridgeRAG (ours)</td>
+      <td>0.8146 <span class="delta">(+3.1pp)</span></td>
+      <td>0.9527 <span class="delta">(+1.2pp)</span></td>
+      <td>0.9875 <span class="delta">(+1.35pp)</span></td>
+      <td>No</td>
+      <td>No</td>
+    </tr>
+  </tbody>
+</table>
+<p style="font-size:0.85rem;color:#666;">Δ vs. PropRAG. R@5 = mean(|gold ∩ top-5| / |gold|). All methods use NV-Embed-v2 embeddings.</p>
+
+<hr>
+
+<!-- WHAT IS IT -->
+<h2>The Core Idea</h2>
+<p>
+  Standard retrieval scores every candidate by <strong>s(q, c)</strong> — similarity to the query alone.
+  For multi-hop questions this is the wrong target. The second-hop passage is relevant not to the original query
+  but to what the <em>first hop already found</em>.
+</p>
+<p>
+  BridgeRAG replaces <strong>s(q, c)</strong> with <strong>s(q, b, c)</strong>, where <em>b</em> is the
+  top-1 first-hop "bridge" passage. A tripartite LLM judge attends jointly to the query and the bridge
+  to identify which reasoning chain is active before ranking second-hop candidates.
+</p>
+
+<h3>Motivating Example</h3>
+<div class="example">
+  <div class="label">Query</div>
+  <p>"Who is the spouse of the actor who played the Terminator?"</p>
+
+  <div class="label wrong">2-way judge  s(q, c) — wrong</div>
+  <p class="wrong">"The Terminator is a 1984 film directed by James Cameron…" — film passage, high surface overlap, wrong chain.</p>
+
+  <div class="label bridge">Bridge b — top hop-1 passage</div>
+  <p class="bridge">"Arnold Schwarzenegger is an Austrian-American actor and former politician…"</p>
+
+  <div class="label right">3-way judge  s(q, b, c) — correct ✓</div>
+  <p class="right">"Maria Shriver is an American journalist and author, and the wife of Arnold Schwarzenegger…"</p>
+</div>
+
+<hr>
+
+<!-- WHY NEW -->
+<h2>What Is New</h2>
+<ul class="novelty">
+  <li><strong>Tripartite scoring.</strong> The judge takes (question, bridge, candidate) rather than (question, candidate). This is the scoring target, not a hyperparameter.</li>
+  <li><strong>Coverage and scoring are separable.</strong> Dual-entity ANN expansion improves pool coverage independently; bridge-conditioned judging improves ranking over any fixed pool. The ablation confirms both effects cleanly.</li>
+  <li><strong>Graph-free and training-free.</strong> No offline entity graph, proposition index, or fine-tuning. Applicable to any new corpus with no preprocessing beyond passage embeddings.</li>
+</ul>
+
+<hr>
+
+<!-- MECHANISM -->
+<h2>Mechanism Validation</h2>
+<p>Four controlled experiments — all reusing cached artifacts (zero extra LLM calls for three of four) — show the conditioning signal is:</p>
+
+<div class="experiments">
+  <div class="exp-card">
+    <strong>Selective</strong>
+    +2.55pp on parallel-chain queries (bridge_comparison, p&lt;0.001, Bonferroni-corrected),
+    ≈0 on single-chain subtypes. The effect appears exactly where chain ambiguity is highest.
+  </div>
+  <div class="exp-card">
+    <strong>Irreplaceable</strong>
+    Substituting the retrieved bridge with SVO query text reduces R@5 by 2.1pp on MuSiQue —
+    performing <em>worse</em> than the hardest-to-retrieve pool passage.
+    Passage content, not retrieval intent, drives the gain.
+  </div>
+  <div class="exp-card">
+    <strong>Predictable</strong>
+    cos(bridge, gold_hop2) positively correlates with per-query B→C improvement
+    (Spearman ρ=0.104, p&lt;0.001 on MuSiQue). Queries where the bridge is closer to the
+    gold passage benefit more from conditioning.
+  </div>
+  <div class="exp-card">
+    <strong>Mechanistically precise</strong>
+    Bridge conditioning causes productive re-rankings: 18.7% of judge-induced top-1 changes
+    improve R@5 on parallel-chain queries vs. 0.6% on single-chain queries. Not noise — correct decisions.
+  </div>
+</div>
+
+<hr>
+
+<!-- REPRODUCIBILITY -->
+<h2>Reproducibility</h2>
+<div class="repro">
+  <p><strong>Models:</strong> NV-Embed-v2 (embeddings) · Llama 3.3 70B AWQ (LLM judge, SVO generation, entity extraction)</p>
+  <p><strong>Infrastructure:</strong> vLLM on NVIDIA A100 80 GB · pgvector ANN index · fully local, no closed-source API calls</p>
+  <p><strong>Cost per query:</strong> 3 LLM calls · 6 ANN passes · ~4–5 seconds sequential on our evaluation server</p>
+  <p><strong>Artifacts:</strong> Canonical results at
+    <a href="https://github.com/andremir/BridgeRAG/blob/main/eval/pilot_audit/bridgerag_canonical_results.json"><code>eval/pilot_audit/bridgerag_canonical_results.json</code></a>.
+    Provenance for the MuSiQue result (three independent runs, 0.8138–0.8146, LLM non-determinism) documented in
+    <a href="https://github.com/andremir/BridgeRAG/blob/main/ARTIFACTS.md"><code>ARTIFACTS.md</code></a>.
+  </p>
+</div>
+
+<hr>
+
+<!-- BIBTEX -->
+<h2 id="bibtex">BibTeX</h2>
+<pre>@article{bacellar2026bridgerag,
+  title     = {{BridgeRAG}: Training-Free Bridge-Conditioned Retrieval
+               for Multi-Hop Question Answering},
+  author    = {Bacellar, Andre},
+  journal   = {arXiv preprint arXiv:YOUR_ARXIV_ID},
+  year      = {2026}
+}</pre>
+
+<hr>
+<p style="font-size:0.82rem;color:#999;text-align:center;">
+  Andre Bacellar · 2026 ·
+  <a href="https://arxiv.org/abs/YOUR_ARXIV_ID">arXiv</a> ·
+  <a href="https://github.com/andremir/BridgeRAG">GitHub</a>
+</p>
+
+</body>
+</html>
