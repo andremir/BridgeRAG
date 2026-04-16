@@ -1,0 +1,26 @@
+{
+  "experiment": "proposal_h_hotpot",
+  "dataset": "hotpotqa",
+  "baselines": {
+    "hipporag2": 0.963,
+    "proprag": 0.974,
+    "svo_n3": 0.9715
+  },
+  "results": {
+    "all_r5": 0.9875,
+    "tune_r5": 0.9896,
+    "test_r5": 0.9856,
+    "best_alpha": 0.15,
+    "blind_alpha01": 0.9875,
+    "wins": 109,
+    "losses": 4,
+    "p": 0.0,
+    "delta_vs_hipporag2": 0.0245,
+    "delta_vs_proprag": 0.0135
+  },
+  "per_type": {
+    "bridge": 0.9846,
+    "comparison": 1.0
+  },
+  "elapsed_s": 7989
+}

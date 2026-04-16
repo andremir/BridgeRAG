@@ -1,0 +1,73 @@
+{
+  "paper": "BridgeRAG: Bridge-Conditioned Retrieval for Multi-Hop Question Answering",
+  "note": "Canonical result artifact matching the numbers reported in the paper. Raw experiment files are preserved unchanged; see RESULTS_PROVENANCE.md for full provenance.",
+  "system": "BridgeRAG (Proposal H: SVO-15 + e1-top-5 + e2-top-5 -> pool-20 -> 3-way bridge-conditioned judge, PIT fusion)",
+  "model_llm": "Llama 3.3 70B AWQ (vLLM, local A100 80GB)",
+  "model_embed": "NV-Embed-v2",
+  "metric": "R@5 = mean(|gold ∩ top-5| / |gold|), full dev set",
+
+  "musique": {
+    "r5": 0.8146,
+    "alpha": 0.1,
+    "n_queries": 999,
+    "source_file": "ablation_recompute_results.json",
+    "source_field": "musique.all.C_3way",
+    "source_note": "Corrected ablation recompute (2026-04-02 17:14) — most recent run, all A/B/C conditions on identical cached pool. See RESULTS_PROVENANCE.md.",
+    "vs_proprag": "+3.1pp (PropRAG baseline: 0.783)",
+    "vs_hipporag2": "+6.8pp (HippoRAG2 baseline: 0.747)",
+    "sign_test": {"wins": 330, "losses": 64, "p": "< 1e-40"}
+  },
+
+  "wiki2": {
+    "r5": 0.9527,
+    "alpha": 0.1,
+    "n_queries": 1000,
+    "source_file": "proposal_h_2wiki_results.json",
+    "source_field": "all_r5",
+    "vs_proprag": "+1.2pp (PropRAG baseline: 0.941)",
+    "vs_hipporag2": "+4.9pp (HippoRAG2 baseline: 0.904)",
+    "sign_test": {"wins": 537, "losses": 0, "p": "< 1e-100"},
+    "bridge_comparison_subtype": {
+      "r5": 0.8755,
+      "n": 235,
+      "B_to_C_delta": "+2.55pp",
+      "B_to_C_p": "< 0.001 (Bonferroni-corrected)"
+    }
+  },
+
+  "hotpotqa": {
+    "r5": 0.9875,
+    "alpha": 0.15,
+    "n_queries": 1000,
+    "corpus": "distractor dev (hotpot_dev_distractor_v1.json, same 1000-query subset as HippoRAG2)",
+    "source_file": "proposal_h_hotpot_results.json",
+    "source_field": "results.all_r5",
+    "vs_proprag": "+1.35pp (PropRAG baseline: 0.974)",
+    "vs_hipporag2": "+2.45pp (HippoRAG2 baseline: 0.963)",
+    "sign_test": {"wins": 109, "losses": 4, "p": "< 1e-25"}
+  },
+
+  "ablation_musique": {
+    "source_file": "ablation_recompute_results.json",
+    "alpha": 0.1,
+    "A_svo_ranked": 0.794,
+    "B_2way_judge": 0.809,
+    "C_bridge_conditioned": 0.8146,
+    "A_to_B_delta": "+1.56pp",
+    "A_to_B_p": 0.0214,
+    "B_to_C_delta": "+0.53pp",
+    "B_to_C_p": 0.207
+  },
+
+  "ablation_wiki2": {
+    "source_file": "ablation_recompute_results.json",
+    "alpha": 0.1,
+    "A_svo_ranked": 0.891,
+    "B_2way_judge": 0.944,
+    "C_bridge_conditioned": 0.9527,
+    "A_to_B_delta": "+5.28pp",
+    "A_to_B_p": "8.9e-28",
+    "B_to_C_delta": "+0.90pp",
+    "B_to_C_p": "3e-6"
+  }
+}
